@@ -1,0 +1,45 @@
+services:
+  patient-service-db:
+    image: postgres:17-alpine
+    container_name: patient-service-db
+    networks:
+      - patient-management-network
+    environment:
+      POSTGRES_DB: patient_db
+      POSTGRES_USER: patient_user
+      POSTGRES_PASSWORD: patient_password
+    ports:
+      - "5400:5432"
+    volumes:
+      - ./volumes/patient-service-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+
+  patient-service:
+    build:
+      context: ./patient-service
+    image: patient-service:latest
+    container_name: patient-service
+    networks:
+      - patient-management-network
+    depends_on:
+      patient-service-db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://patient-service-db:5432/patient_db
+      SPRING_DATASOURCE_USERNAME: patient_user
+      SPRING_DATASOURCE_PASSWORD: patient_password
+      SPRING_PROFILES_ACTIVE: dev
+    ports:
+      - "8081:8081"
+
+
+networks:
+  patient-management-network:
+    name: patient-management-network
+    driver: bridge
