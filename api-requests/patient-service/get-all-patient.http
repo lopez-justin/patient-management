@@ -1,0 +1,2 @@
+### GET request to retrieve all patients
+GET http://localhost:8081/api/v1/patients

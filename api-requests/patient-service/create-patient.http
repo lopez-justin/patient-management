@@ -1,0 +1,13 @@
+### POST request to register a new patient
+POST http://localhost:8081/api/v1/patients
+Content-Type: application/json
+
+{
+  "name": "Test 2",
+  "email": "test2@example.com",
+  "address": "1231 Main St",
+  "birthDate": "2000-02-20",
+  "phoneNumber": "0000000001"
+}
+
+> {% client.global.set("patientId", response.body.id) %}
