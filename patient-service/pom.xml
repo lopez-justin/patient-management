@@ -29,8 +29,18 @@
     <properties>
         <java.version>21</java.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <grpc-contracts.version>0.0.1-SNAPSHOT</grpc-contracts.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.patientmanagement</groupId>
+            <artifactId>grpc-contracts</artifactId>
+            <version>${grpc-contracts.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-grpc-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -71,6 +81,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-grpc-client-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
