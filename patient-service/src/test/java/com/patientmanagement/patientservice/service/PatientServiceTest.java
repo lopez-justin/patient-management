@@ -1,8 +1,10 @@
 package com.patientmanagement.patientservice.service;
 
+import com.patientmanagement.patientservice.client.BillingAccountClient;
 import com.patientmanagement.patientservice.dto.PatientRequest;
 import com.patientmanagement.patientservice.dto.PatientResponse;
 import com.patientmanagement.patientservice.entity.PatientEntity;
+import com.patientmanagement.patientservice.exception.BillingServiceUnavailableException;
 import com.patientmanagement.patientservice.exception.DuplicateEmailException;
 import com.patientmanagement.patientservice.exception.PatientNotFoundException;
 import com.patientmanagement.patientservice.mapper.PatientMapper;
@@ -26,6 +28,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,12 +53,17 @@ class PatientServiceTest {
     @Mock
     private PatientMapper patientMapper;
 
+    @Mock
+    private BillingAccountClient billingAccountClient;
+
     @InjectMocks
     private PatientService patientService;
 
     @Test
     void createNormalizesEmailAndReturnsResponse() {
         PatientEntity entity = new PatientEntity();
+        entity.setId("patient-id");
+        entity.setName("Justin Lopez");
         PatientResponse response = response(TEST_EMAIL);
 
         when(patientRepository.existsByEmail(TEST_EMAIL)).thenReturn(false);
@@ -67,6 +76,24 @@ class PatientServiceTest {
         assertThat(result).isEqualTo(response);
         assertThat(entity.getEmail()).isEqualTo(TEST_EMAIL);
         verify(patientRepository).saveAndFlush(entity);
+        verify(billingAccountClient).createBillingAccount("patient-id", "Justin Lopez", TEST_EMAIL);
+    }
+
+    @Test
+    void createThrowsWhenBillingServiceFails() {
+        PatientEntity entity = new PatientEntity();
+        entity.setId("patient-id");
+        entity.setName("Justin Lopez");
+
+        when(patientRepository.existsByEmail(TEST_EMAIL)).thenReturn(false);
+        when(patientMapper.toEntity(REQUEST)).thenReturn(entity);
+        when(patientRepository.saveAndFlush(entity)).thenReturn(entity);
+        doThrow(new BillingServiceUnavailableException(new RuntimeException("down")))
+                .when(billingAccountClient)
+                .createBillingAccount(anyString(), anyString(), anyString());
+
+        assertThatThrownBy(() -> patientService.create(REQUEST))
+                .isInstanceOf(BillingServiceUnavailableException.class);
     }
 
     @Test
