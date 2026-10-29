@@ -1,0 +1,6 @@
+.git
+.idea
+**/target
+volumes
+api-requests
+*.iml
