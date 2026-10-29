@@ -1,5 +1,6 @@
 package com.patientmanagement.patientservice.service;
 
+import com.patientmanagement.patientservice.client.BillingAccountClient;
 import com.patientmanagement.patientservice.dto.PatientRequest;
 import com.patientmanagement.patientservice.dto.PatientResponse;
 import com.patientmanagement.patientservice.entity.PatientEntity;
@@ -19,10 +20,16 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
+    private final BillingAccountClient billingAccountClient;
 
-    public PatientService(PatientRepository patientRepository, PatientMapper patientMapper) {
+    public PatientService(
+            PatientRepository patientRepository,
+            PatientMapper patientMapper,
+            BillingAccountClient billingAccountClient
+    ) {
         this.patientRepository = patientRepository;
         this.patientMapper = patientMapper;
+        this.billingAccountClient = billingAccountClient;
     }
 
     @Transactional
@@ -34,7 +41,12 @@ public class PatientService {
 
         PatientEntity patient = patientMapper.toEntity(request);
         patient.setEmail(email);
-        return patientMapper.toResponse(patientRepository.saveAndFlush(patient));
+        PatientEntity savedPatient = patientRepository.saveAndFlush(patient);
+        billingAccountClient.createBillingAccount(
+                savedPatient.getId(),
+                savedPatient.getName(),
+                savedPatient.getEmail());
+        return patientMapper.toResponse(savedPatient);
     }
 
     @Transactional(readOnly = true)
