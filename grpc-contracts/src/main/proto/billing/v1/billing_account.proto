@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package billing.v1;
+
+option java_package = "com.patientmanagement.contracts.billing.v1";
+option java_multiple_files = true;
+option java_outer_classname = "BillingAccountProto";
+
+import "google/protobuf/timestamp.proto";
+
+service BillingAccountService {
+  rpc CreateBillingAccount(CreateBillingAccountRequest)
+      returns (CreateBillingAccountResponse);
+}
+
+message CreateBillingAccountRequest {
+  string patient_id = 1;
+  string patient_name = 2;
+  string patient_email = 3;
+}
+
+message CreateBillingAccountResponse {
+  string id = 1;
+  string patient_id = 2;
+  BillingAccountStatus status = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+enum BillingAccountStatus {
+  BILLING_ACCOUNT_STATUS_UNSPECIFIED = 0;
+  BILLING_ACCOUNT_STATUS_ACTIVE = 1;
+}
