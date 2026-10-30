@@ -39,6 +39,20 @@ public class GlobalExceptionHandler {
         return buildProblem(HttpStatus.CONFLICT, "Email already registered", exception.getMessage(), request);
     }
 
+    @ExceptionHandler(BillingServiceUnavailableException.class)
+    public ProblemDetail handleBillingServiceUnavailableException(
+            BillingServiceUnavailableException exception,
+            HttpServletRequest request
+    ) {
+        log.warn("Billing service call failed", exception);
+        return buildProblem(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Billing service unavailable",
+                "The patient could not be created because the billing service is unavailable",
+                request
+        );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationException(
             MethodArgumentNotValidException exception,

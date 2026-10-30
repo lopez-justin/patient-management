@@ -8,6 +8,15 @@ spring:
 
   jpa:
     open-in-view: false
+  grpc:
+    client:
+      channel:
+        billing:
+          target: dns:///${BILLING_SERVICE_HOST:localhost}:${BILLING_SERVICE_PORT:9090}
+          default:
+            load-balancing-policy: pick_first
+          idle:
+            timeout: 1h
 
 
 server:

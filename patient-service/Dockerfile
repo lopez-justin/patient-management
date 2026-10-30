@@ -4,7 +4,7 @@ WORKDIR /workspace
 
 COPY . .
 
-RUN ./mvnw -q -DskipTests package
+RUN ./mvnw -q -DskipTests -pl patient-service -am package
 
 FROM eclipse-temurin:21-jre-alpine
 
@@ -12,7 +12,7 @@ WORKDIR /app
 
 RUN addgroup -S spring && adduser -S spring -G spring
 
-COPY --from=build /workspace/target/*.jar app.jar
+COPY --from=build /workspace/patient-service/target/*.jar app.jar
 
 USER spring:spring
 
