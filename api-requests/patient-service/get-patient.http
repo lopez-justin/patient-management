@@ -1,0 +1,2 @@
+### GET request to retrieve a patient by ID
+GET http://localhost:8081/api/v1/patients/{{patientId}}
