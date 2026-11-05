@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: patient-service
+              uri: "${PATIENT_SERVICE_URI:http://localhost:8081}"
+              predicates:
+                - Path=/api/v1/patients/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@patientKeyResolver}"
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.requestedTokens: 1
+            - id: patient-service-api-docs
+              uri: "${PATIENT_SERVICE_URI:http://localhost:8081}"
+              predicates:
+                - Path=/v3/api-docs,/v3/api-docs/**
