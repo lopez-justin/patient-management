@@ -15,7 +15,7 @@
     <artifactId>grpc-contracts</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>grpc-contracts</name>
-    <description>Shared gRPC contracts</description>
+    <description>Shared Protobuf contracts</description>
 
     <properties>
         <java.version>21</java.version>

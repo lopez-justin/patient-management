@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package patient.events.v1;
+
+option java_package = "com.patientmanagement.contracts.patient.events.v1";
+option java_multiple_files = true;
+option java_outer_classname = "PatientCreatedEventProto";
+
+import "google/protobuf/timestamp.proto";
+
+message PatientCreatedEvent {
+  string event_id = 1;
+  string patient_id = 2;
+  string patient_name = 3;
+  string patient_email = 4;
+  string address = 5;
+  string birth_date = 6;
+  string phone_number = 7;
+  google.protobuf.Timestamp occurred_at = 8;
+}
