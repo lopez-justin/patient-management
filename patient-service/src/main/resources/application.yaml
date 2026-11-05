@@ -32,6 +32,29 @@ app:
     topics:
       patient-created: patient.created.v1
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: patient-service
+    description: Patient REST API
+    version: 0.0.1-SNAPSHOT
+
 server:
   port: 8081
 

@@ -64,6 +64,9 @@ class PatientServiceTest {
         PatientEntity entity = new PatientEntity();
         entity.setId("patient-id");
         entity.setName("Justin Lopez");
+        entity.setAddress("123 Main St");
+        entity.setBirthDate(LocalDate.of(1990, 1, 15));
+        entity.setPhoneNumber("123456789");
         PatientResponse response = response(TEST_EMAIL);
 
         when(patientRepository.existsByEmail(TEST_EMAIL)).thenReturn(false);

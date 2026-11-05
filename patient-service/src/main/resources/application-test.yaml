@@ -15,6 +15,11 @@ spring:
     admin:
       auto-create: false
 
+management:
+  health:
+    kafka:
+      enabled: false
+
 
 logging:
   level:
