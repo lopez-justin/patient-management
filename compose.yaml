@@ -71,6 +71,19 @@ services:
       retries: 20
       start_period: 30s
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    networks:
+      - patient-management-network
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   billing-service:
     build:
       context: .
@@ -125,6 +138,12 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
     ports:
       - "8081:8081"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 8081" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
 
   analytics-service:
     build:
@@ -140,6 +159,26 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    image: api-gateway:latest
+    container_name: api-gateway
+    networks:
+      - patient-management-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      patient-service:
+        condition: service_healthy
+    environment:
+      PATIENT_SERVICE_URI: http://patient-service:8081
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8080:8080"
 
 
 networks:
