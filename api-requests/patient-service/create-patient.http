@@ -1,5 +1,5 @@
 ### POST request to register a new patient
-POST http://localhost:8081/api/v1/patients
+POST http://localhost:8080/api/v1/patients
 Content-Type: application/json
 
 {

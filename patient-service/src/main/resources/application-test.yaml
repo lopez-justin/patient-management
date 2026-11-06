@@ -11,6 +11,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  kafka:
+    admin:
+      auto-create: false
+
+management:
+  health:
+    kafka:
+      enabled: false
 
 
 logging:

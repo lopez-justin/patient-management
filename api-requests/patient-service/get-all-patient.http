@@ -1,2 +1,2 @@
 ### GET request to retrieve all patients
-GET http://localhost:8081/api/v1/patients
+GET http://localhost:8080/api/v1/patients

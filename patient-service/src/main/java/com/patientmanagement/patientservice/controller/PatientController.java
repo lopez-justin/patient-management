@@ -3,6 +3,10 @@ package com.patientmanagement.patientservice.controller;
 import com.patientmanagement.patientservice.dto.PatientRequest;
 import com.patientmanagement.patientservice.dto.PatientResponse;
 import com.patientmanagement.patientservice.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
+@Tag(name = "Patients", description = "Patient management operations")
 @RestController
 @RequestMapping("/api/v1/patients")
 public class PatientController {
@@ -32,6 +37,12 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    @Operation(summary = "Create a patient")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Patient created"),
+            @ApiResponse(responseCode = "409", description = "Email already registered"),
+            @ApiResponse(responseCode = "503", description = "Billing service unavailable")
+    })
     @PostMapping
     public ResponseEntity<PatientResponse> create(@Valid @RequestBody PatientRequest request) {
         PatientResponse patient = patientService.create(request);
@@ -42,11 +53,14 @@ public class PatientController {
         return ResponseEntity.created(location).body(patient);
     }
 
+    @Operation(summary = "Get a patient by ID")
+    @ApiResponse(responseCode = "404", description = "Patient not found")
     @GetMapping("/{id}")
     public PatientResponse findById(@PathVariable String id) {
         return patientService.findById(id);
     }
 
+    @Operation(summary = "List patients")
     @GetMapping
     public Page<PatientResponse> findAll(
             @PageableDefault(size = 20, sort = "name") Pageable pageable
@@ -54,11 +68,18 @@ public class PatientController {
         return patientService.findAll(pageable);
     }
 
+    @Operation(summary = "Update a patient")
+    @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "Patient not found"),
+            @ApiResponse(responseCode = "409", description = "Email already registered")
+    })
     @PutMapping("/{id}")
     public PatientResponse update(@PathVariable String id, @Valid @RequestBody PatientRequest request) {
         return patientService.update(id, request);
     }
 
+    @Operation(summary = "Delete a patient")
+    @ApiResponse(responseCode = "404", description = "Patient not found")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable String id) {
